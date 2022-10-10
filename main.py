@@ -1,5 +1,4 @@
 from dataclasses import dataclass, asdict
-from email.mime import image
 
 import requests
 import time
