@@ -36,7 +36,7 @@ class Monitor:
         embed.set_author(name=f'Immoscout monitor')
 
         # set thumbnail
-        embed.set_thumbnail(url=propertie["image"])
+        embed.set_image(url=propertie["image"])
 
         # set timestamp (default is now)
         embed.set_timestamp()
