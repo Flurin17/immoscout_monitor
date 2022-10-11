@@ -5,6 +5,7 @@ import time
 from discord_webhook import DiscordWebhook, DiscordEmbed
 import logging
 import pymongo
+from datetime import datetime
 
 
 from config import *
@@ -32,14 +33,12 @@ class Monitor:
     def send_webhook(self, propertie):
         
         webhook = DiscordWebhook(url=discordWebhook, rate_limit_retry=True)
-        embed = DiscordEmbed(title='Found new appartment', description=f'Found propertie in {propertie["location"]}', color='03b2f8')
-        embed.set_author(name=f'Immoscout monitor')
+        embed = DiscordEmbed(title=f'Found new appartment in {propertie["location"]}', color='03b2f8')
+        embed.set_author(name=f'Immoscout24 monitor')
 
         # set thumbnail
-        embed.set_image(url=propertie["image"])
 
         # set timestamp (default is now)
-        embed.set_timestamp()
         i = propertie
         # add fields to embed
         embed.add_embed_field(name='Price', value=i["price"])
@@ -48,7 +47,12 @@ class Monitor:
         embed.add_embed_field(name='Surface', value=i["squaremeter"])
         embed.add_embed_field(name='Url', value=f'[{i["url"]}]({i["url"]})')
 
+        embed.set_image(url=propertie["image"])
+
+        embed.set_footer(text=f"Found appartment at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} | Monitor created by sorry#8866")
+        embed.set_timestamp()
         # add embed object to webhook
+
         webhook.add_embed(embed)
 
         response = webhook.execute()
@@ -110,14 +114,14 @@ class Monitor:
 
                             )
                             self.propertiesList.append(asdict(propertie))
-                            break
+                        break
 
                     except Exception as e:
                         logging.error(f"Failed to capture propertie. Error : {e}")
+                        time.sleep(20)
             except:
                 logging.error(f"Status code: {r.status_code}")
-                
-            time.sleep(20)
+                time.sleep(20)
 
     def send_message(self, id):
         r = requests.post(
