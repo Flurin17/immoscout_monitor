@@ -7,3 +7,5 @@ sendContactRequest = False
 fullname= "Max Muster"
 email = "test.test@gmail.com"
 phoneNr = "+41857234234"
+
+apiKeyGoogle = ""
