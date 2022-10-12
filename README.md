@@ -13,7 +13,7 @@
 
 
 ## Get your immoscout search link
-1. Open https://www.immoscout24.ch/en and filter for your new propertie
+1. Open https://www.immoscout24.ch/en and filter for your new propertie. (IMPORTANT: sort for new appartements first)
 2. Press F12 to get into the developer tools
 3. Switch to network tab
 4. Press "search" and look up the request with /properties
