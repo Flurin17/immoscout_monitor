@@ -59,24 +59,24 @@ class Monitor:
     
     def get_page(self):
         while True:
-            r = requests.get(
-                url=immoscoutLink,
-                headers={
-                    "Accept": "text/plain, application/json, text/json",
-                    "Accept-Encoding": "gzip, deflate, br",
-                    "Accept-Language": "en-US,en;q=0.9",
-                    "Connection": "keep-alive",
-                    "Host": "rest-api.immoscout24.ch",
-                    "is24-meta-pagenumber": "1",
-                    "Origin": "https://www.immoscout24.ch",
-                    "Referer": "https://www.immoscout24.ch/",
-                    "sec-ch-ua": '"Chromium";v="104", " Not A;Brand";v="99", "Google Chrome";v="104"',
-                    "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36",
-                    "X-OriginalUrl": "http%3A%2F%2Fwww.immoscout24.ch%2Fde"
-                }
-            )
-
             try:
+                r = requests.get(
+                    url=immoscoutLink,
+                    headers={
+                        "Accept": "text/plain, application/json, text/json",
+                        "Accept-Encoding": "gzip, deflate, br",
+                        "Accept-Language": "en-US,en;q=0.9",
+                        "Connection": "keep-alive",
+                        "Host": "rest-api.immoscout24.ch",
+                        "is24-meta-pagenumber": "1",
+                        "Origin": "https://www.immoscout24.ch",
+                        "Referer": "https://www.immoscout24.ch/",
+                        "sec-ch-ua": '"Chromium";v="104", " Not A;Brand";v="99", "Google Chrome";v="104"',
+                        "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36",
+                        "X-OriginalUrl": "http%3A%2F%2Fwww.immoscout24.ch%2Fde"
+                    }
+                )
+
                 if r.status_code == 200:
                     responseJson = r.json()
                     properties = responseJson["properties"]
@@ -119,8 +119,8 @@ class Monitor:
                     except Exception as e:
                         logging.error(f"Failed to capture propertie. Error : {e}")
                         time.sleep(20)
-            except:
-                logging.error(f"Status code: {r.status_code}")
+            except Exception as e:
+                logging.error(f"Failed to capture propertie. Error : {e}")
                 time.sleep(20)
 
     def send_message(self, id):
