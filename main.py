@@ -8,6 +8,7 @@ import pymongo
 from datetime import datetime
 
 
+
 from config import *
 logging.basicConfig(format='%(asctime)s - %(message)s', level=logging.INFO)
 db = pymongo.MongoClient(mongoDBUrl).monitors.flats
@@ -52,10 +53,22 @@ class Monitor:
         embed.set_footer(text=f"Found appartment at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} | Monitor created by sorry#8866")
         embed.set_timestamp()
         # add embed object to webhook
-
         webhook.add_embed(embed)
 
-        response = webhook.execute()
+        embed1 = DiscordEmbed(title=f'Location for new appartment in {propertie["location"]}', color='03b2f8')
+        try:
+            with open("logging/picture.png", "rb") as f:
+                webhook.add_file(file=f.read(), filename='map.png')
+
+            embed1.set_image(url='attachment://map.png')
+            embed1.set_footer(text=f"Found appartment at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} | Monitor created by sorry#8866")
+
+            webhook.add_embed(embed1)
+        except:
+            logging.error("Failed uploading picture")
+
+        
+        webhook.execute()
     
     def get_page(self):
         while True:
@@ -123,6 +136,26 @@ class Monitor:
                 logging.error(f"Failed to capture propertie. Error : {e}")
                 time.sleep(20)
 
+    def create_map(self, propertie):
+        coordinates = f"{propertie['latitude']},{propertie['longtitude']}"
+        r = requests.get(
+            url=f'https://maps.googleapis.com/maps/api/staticmap?center={coordinates}&zoom=10&size=800x500&markers=color:red|label:A|{coordinates}&key={apiKeyGoogle}',
+            headers = {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; rv:105.0) Gecko/20100101 Firefox/105.0',
+    
+            }
+        )
+
+        try:
+            if r.status_code == 200:
+                with open('logging/picture.png', 'wb') as outfile:
+                    outfile.write(r.content)
+                logging.info("Created Picture")
+        except:
+            logging.error(f"Status code: {r.status_code}")
+            
+
+
     def send_message(self, id):
         r = requests.post(
             url=f'https://rest-api.immoscout24.ch/v4/de/properties/{str(id)}/contacts',
@@ -174,8 +207,11 @@ class Monitor:
                 pass
             else:
                 logging.info(f"Found new propertie in {propertie['location']}")
+                if apiKeyGoogle != "":
+                    self.create_map(propertie)
                 self.send_webhook(propertie)
                 db.insert_one(propertie)
+
                 if sendContactRequest:
                     self.send_message(propertie['id'])
                 foundNew = True
